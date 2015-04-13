@@ -25,26 +25,15 @@
 
 
 #import "NOAPIController.h"
+#import "NOAPIMapper.h"
 #import <AFNetworking/AFNetworking.h>
-@import ObjectiveC;
-
-
-#ifdef DEBUG
-    #define LOG(fmt, ...) NSLog((fmt), ##__VA_ARGS__)
-    #define DLOG(fmt, ...) NSLog((@"%s [Line %d] " fmt), __func__, __LINE__, ##__VA_ARGS__)
-#else
-    #define LOG(...)
-    #define DLOG(...)
-#endif
 
 
 @interface AbstractAPIController ()
-@property (strong, nonatomic) NSDictionary *fieldsMap;
-@property (strong, nonatomic) id transformer;
-@property (nonatomic, readwrite) AFHTTPRequestOperationManager *requestManager;
+@property (nonatomic) NOAPIMapper *mapper;
+@property (nonatomic) AFHTTPRequestOperationManager *requestManager;
 @property (nonatomic) dispatch_queue_t sendingQueue;
 @property (nonatomic) dispatch_queue_t parsingQueue;
-- (id)objectOfType:(Class)objectType fromDictionary:(NSDictionary *)rawObject;
 @end
 
 
@@ -57,11 +46,10 @@
 {
     self = [self init];
     if (self) {
-        self.fieldsMap = fieldsMap;
-        self.transformer = transformer;
+        _mapper = [[NOAPIMapper alloc] initWithFieldsMap:fieldsMap transformer:transformer];
         _sendingQueue = dispatch_queue_create(NULL, DISPATCH_QUEUE_SERIAL);
         _parsingQueue = dispatch_queue_create(NULL, DISPATCH_QUEUE_SERIAL);
-        self.requestManager = [[AFHTTPRequestOperationManager alloc]
+        _requestManager = [[AFHTTPRequestOperationManager alloc]
             initWithBaseURL:[NSURL URLWithString:baseAPIURL]];
     }
     return self;
@@ -94,7 +82,7 @@
         AFHTTPRequestOperation *operation = [self.requestManager HTTPRequestOperationWithRequest:request
             success:^(AFHTTPRequestOperation *operation, id rawObject) {
                 dispatch_async(self.parsingQueue, ^{
-                    id object = [self objectOfType:objectType fromDictionary:rawObject];
+                    id object = [self.mapper objectOfType:objectType fromDictionary:rawObject];
                     if (success) {
                         dispatch_async(dispatch_get_main_queue(), ^{
                             success(rawObject, object);
@@ -166,7 +154,7 @@
         void (^successBlock)(AFHTTPRequestOperation *operation, NSDictionary *rawObject) =
             ^(AFHTTPRequestOperation *operation, NSDictionary *rawObject) {
                 dispatch_async(self.parsingQueue, ^{
-                    id object = [self objectOfType:objectType fromDictionary:rawObject];
+                    id object = [self.mapper objectOfType:objectType fromDictionary:rawObject];
                     if (success) {
                         dispatch_async(dispatch_get_main_queue(), ^{
                             success(rawObject, object);
@@ -203,7 +191,7 @@
                 break;
             }
             default: {
-                DLOG(@"Error: Unexpected method for request.");
+                NSLog(@"Error: Unexpected method for request.");
             }
         }
     });
@@ -219,7 +207,7 @@
                 dispatch_async(self.parsingQueue, ^{
                     NSMutableArray *objects = [[NSMutableArray alloc] initWithCapacity:rawObjects.count];
                     for (NSDictionary *rawObject in rawObjects) {
-                        id object = [self objectOfType:objectType fromDictionary:rawObject];
+                        id object = [self.mapper objectOfType:objectType fromDictionary:rawObject];
                         if (object) {
                             [objects addObject:object];
                         }
@@ -248,144 +236,6 @@
 
 #pragma mark - Private methods
 
-- (id)objectOfType:(Class)objectType fromDictionary:(NSDictionary *)rawObject
-{
-    id objectTransformer = self.fieldsMap[NSStringFromClass(objectType)];
-    id (*transform)(id, SEL, id) = (id (*)(id, SEL, id))objc_msgSend;
-
-    // Use external parser method
-    if ([objectTransformer isKindOfClass:[NSString class]]) {
-        SEL transformerSelector = NSSelectorFromString(objectTransformer);
-        return transform(self.transformer, transformerSelector, rawObject);
-    }
-    // Parse each field
-    else {
-        if ([rawObject isKindOfClass:objectType]) {
-            return rawObject;
-        }
-
-        if (![rawObject isKindOfClass:[NSDictionary class]]) {
-            return nil;
-        }
-
-        if (!objectTransformer) {
-            return nil;
-        }
-
-        id object = [[objectType alloc] init];
-        NSDictionary *fields = objectTransformer;
-        
-        for (NSString *fieldKey in fields.allKeys) {
-            NSDictionary *fieldDescription = fields[fieldKey];
-
-            NSString *objectKey = fieldDescription[@"key"];
-            if (!objectKey) {
-                objectKey = fieldKey;
-            }
-            
-            NSString *arrayItemClassName = fields[fieldKey][@"arrayOf"];
-            NSString *dictionaryItemClassName = fields[fieldKey][@"dictionaryOf"];
-            NSString *typeTransformer = fieldDescription[@"transformer"];
-            NSString *classOfObject = fieldDescription[@"kindOf"];
-            NSString *typeOfField = fieldDescription[@"type"];
-
-            // Parse array of sub-objects.
-            if (arrayItemClassName) {
-                NSArray *innerArray = rawObject[fieldKey];
-                if ([innerArray isKindOfClass:[NSArray class]]) {
-                    NSMutableArray *arrayOfItems = [NSMutableArray array];
-                    for (NSDictionary *arrayItemDescription in innerArray) {
-                        id arrayItem = nil;
-                        // Just copy array values (array of NSStrings for example).
-                        if ([arrayItemDescription isKindOfClass:NSClassFromString(arrayItemClassName)]) {
-                            arrayItem = arrayItemDescription;
-                        }
-                        // Parse array element.
-                        else {
-                            arrayItem = [self objectOfType:NSClassFromString(arrayItemClassName)
-                                fromDictionary:arrayItemDescription];
-                        }
-                        if (arrayItem) {
-                            [arrayOfItems addObject:arrayItem];
-                        }
-                        else {
-                            LOG(@"Warning: API response for <%@> contains unexpected value: <%@>%@"
-                                "for key \"%@\"while in array, while <%@> is expected.", objectType,
-                                [arrayItemDescription class], arrayItemDescription, fieldKey,
-                                arrayItemClassName);
-                        }
-                    }
-                    [object setValue:arrayOfItems forKey:objectKey];
-                }
-                else if (innerArray == nil || [innerArray isKindOfClass:[NSNull class]]) {
-                    // No value is ok.
-                }
-                else {
-                    LOG(@"Warning: API response for <%@> contains unexpected value: <%@>%@"
-                        "for key \"%@\"while an array is expected.", objectType,
-                        [innerArray class], innerArray, fieldKey);
-                }
-            }
-            
-            // Parse values of dictionary as array.
-            else if (dictionaryItemClassName) {
-                if ([rawObject[fieldKey] isKindOfClass:[NSDictionary class]]) {
-                    NSMutableDictionary *dictOfItems = [NSMutableDictionary dictionary];
-                    [rawObject[fieldKey] enumerateKeysAndObjectsUsingBlock:
-                        ^(id key, NSDictionary *dictItemDescription, BOOL *stop) {
-                            id dictItem = [self objectOfType:NSClassFromString(dictionaryItemClassName)
-                                fromDictionary:dictItemDescription];
-                            dictOfItems[key] = dictItem;
-                        }];
-                    [object setValue:dictOfItems forKey:objectKey];
-                }
-            }
-            
-            // Parse object that should be transformed.
-            else if (typeTransformer) {
-                SEL transformerSelector = NSSelectorFromString(typeTransformer);
-                id transformedData = transform(self.transformer, transformerSelector,
-                    [rawObject valueForKeyPath:fieldKey]);
-                [object setValue:transformedData forKey:objectKey];
-            }
-            
-            // Parse object according to its class.
-            else if (classOfObject) {
-                id innerObject = [self objectOfType:NSClassFromString(classOfObject)
-                    fromDictionary:[rawObject valueForKeyPath:fieldKey]];
-                if (object) {
-                    [object setValue:innerObject forKeyPath:objectKey];
-                }
-            }
-            
-            // Check type of the value, don't copy invalid values.
-            else if (typeOfField) {
-                id innerObject = [rawObject valueForKeyPath:fieldKey];
-                if ([innerObject isKindOfClass:NSClassFromString(typeOfField)]) {
-                    [object setValue:[rawObject valueForKeyPath:fieldKey] forKey:objectKey];
-                }
-                else if (innerObject == nil || [innerObject isKindOfClass:[NSNull class]]) {
-                    // No value is ok.
-                }
-                else {
-                    LOG(@"Warning: API response for <%@> contains unexpected value: <%@>%@"
-                        "for key \"%@\"while an instance of <%@> is expected.", objectType,
-                        [innerObject class], innerObject, fieldKey, typeOfField);
-                }
-            }
-            
-            // Plain value copy.
-            else {
-                id innerObject = [rawObject valueForKeyPath:fieldKey];
-                if (innerObject) {
-                    [object setValue:[rawObject valueForKeyPath:fieldKey] forKey:objectKey];
-                }
-            }
-        }
-        return object;
-    }
-}
-
 - (void)getObjectOfType:(Class)objectType fromURL:(NSString *)objectURL postBody:(NSData *)bodyData
     boundary:(NSString *)boundary success:(void (^)(id, id))success
     failure:(void (^)(NSError *error, id response))failure
@@ -406,7 +256,7 @@
         AFHTTPRequestOperation *operation = [self.requestManager HTTPRequestOperationWithRequest:request
              success:^(AFHTTPRequestOperation *operation, id rawObject) {
                  dispatch_async(self.parsingQueue, ^{
-                     id object = [self objectOfType:objectType fromDictionary:rawObject];
+                     id object = [self.mapper objectOfType:objectType fromDictionary:rawObject];
                      if (success) {
                          dispatch_async(dispatch_get_main_queue(), ^{
                              success(rawObject, object);
