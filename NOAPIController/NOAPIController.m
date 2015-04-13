@@ -29,9 +29,19 @@
 @import ObjectiveC;
 
 
+#ifdef DEBUG
+    #define LOG(fmt, ...) NSLog((fmt), ##__VA_ARGS__)
+    #define DLOG(fmt, ...) NSLog((@"%s [Line %d] " fmt), __func__, __LINE__, ##__VA_ARGS__)
+#else
+    #define LOG(...)
+    #define DLOG(...)
+#endif
+
+
 @interface AbstractAPIController ()
 @property (strong, nonatomic) NSDictionary *fieldsMap;
 @property (strong, nonatomic) id transformer;
+@property (nonatomic, readwrite) AFHTTPRequestOperationManager *requestManager;
 @property (nonatomic) dispatch_queue_t sendingQueue;
 @property (nonatomic) dispatch_queue_t parsingQueue;
 - (id)objectOfType:(Class)objectType fromDictionary:(NSDictionary *)rawObject;

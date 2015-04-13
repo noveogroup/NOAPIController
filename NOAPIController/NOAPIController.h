@@ -27,6 +27,15 @@
 #import <Foundation/Foundation.h>
 
 
+typedef NS_ENUM(NSInteger, HTTPRequestMethod) {
+    HTTPRequestMethodUnknown = 0,
+    HTTPRequestMethodGET,
+    HTTPRequestMethodPOST,
+    HTTPRequestMethodPUT,
+    HTTPRequestMethodDELETE
+};
+
+
 @class AFHTTPRequestOperationManager;
 
 
@@ -57,7 +66,7 @@
 
 
 @interface AbstractAPIController : NSObject
-@property (strong, nonatomic) AFHTTPRequestOperationManager *requestManager;
+@property (nonatomic, readonly) AFHTTPRequestOperationManager *requestManager;
 
 - (instancetype)initWithBaseURL:(NSString *)baseAPIURL fieldsMap:(NSDictionary *)fieldsMap
     transformer:(id)transformer;
