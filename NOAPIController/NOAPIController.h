@@ -38,6 +38,8 @@ typedef NS_ENUM(NSInteger, HTTPRequestMethod) {
 
 @class AFHTTPRequestOperationManager;
 
+@protocol NOAPITask;
+
 
 /*
     Format/example of fieldsMap:
@@ -71,36 +73,36 @@ typedef NS_ENUM(NSInteger, HTTPRequestMethod) {
 - (instancetype)initWithBaseURL:(NSString *)baseAPIURL fieldsMap:(NSDictionary *)fieldsMap
     transformer:(id)transformer;
 
-- (void)getObjectOfType:(Class)objectType fromURL:(NSString *)objectURL
+- (id<NOAPITask>)getObjectOfType:(Class)objectType fromURL:(NSString *)objectURL
     success:(void(^)(id rawObject, id resultingObject))success
     failure:(void(^)(NSError *error, id response))failure;
 
-- (void)getObjectOfType:(Class)objectType fromURL:(NSString *)objectURL
+- (id<NOAPITask>)getObjectOfType:(Class)objectType fromURL:(NSString *)objectURL
     method:(NSString *)httpMethod httpBody:(NSData *)bodyData success:(void (^)(id, id))success
     failure:(void (^)(NSError *error, id response))failure;
 
-- (void)getObjectOfType:(Class)objectType fromURL:(NSString *)objectURL POSTData:(NSData *)postData
-    success:(void(^)(id rawObject, id resultingObject))success
+- (id<NOAPITask>)getObjectOfType:(Class)objectType fromURL:(NSString *)objectURL
+    POSTData:(NSData *)postData success:(void(^)(id rawObject, id resultingObject))success
     failure:(void(^)(NSError *error, id response))failure;
 
-- (void)getObjectOfType:(Class)objectType fromURL:(NSString *)objectURL PUTData:(NSData *)putData
-    success:(void(^)(id rawObject, id resultingObject))success
+- (id<NOAPITask>)getObjectOfType:(Class)objectType fromURL:(NSString *)objectURL
+    PUTData:(NSData *)putData success:(void(^)(id rawObject, id resultingObject))success
     failure:(void(^)(NSError *error, id response))failure;
 
-- (void)postData:(NSData *)postData toURL:(NSString *)objectURL success:(void (^)(id))success
-    failure:(void (^)(NSError *error, id response))failure;
+- (void)postData:(NSData *)postData toURL:(NSString *)objectURL
+    success:(void (^)(id))success failure:(void (^)(NSError *error, id response))failure;
 
-- (void)getObjectOfType:(Class)objectType fromURL:(NSString *)objectURL
+- (id<NOAPITask>)getObjectOfType:(Class)objectType fromURL:(NSString *)objectURL
     requestMethod:(HTTPRequestMethod)method
     success:(void(^)(id rawObject, id resultingObject))success
     failure:(void(^)(NSError *error, id response))failure;
 
-- (void)getObjectsOfType:(Class)objectType fromURL:(NSString *)objectURL
+- (id<NOAPITask>)getObjectsOfType:(Class)objectType fromURL:(NSString *)objectURL
     success:(void(^)(NSArray *rawObjects, NSArray *resultingObjects))success
     failure:(void(^)(NSError *error, id response))failure;
 
-- (void)getObjectOfType:(Class)objectType fromURL:(NSString *)objectURL postBody:(NSData *)bodyData
-    boundary:(NSString *)boundary success:(void (^)(id, id))success
+- (id<NOAPITask>)getObjectOfType:(Class)objectType fromURL:(NSString *)objectURL
+    postBody:(NSData *)bodyData boundary:(NSString *)boundary success:(void (^)(id, id))success
     failure:(void (^)(NSError *error, id response))failure;
 
 @end

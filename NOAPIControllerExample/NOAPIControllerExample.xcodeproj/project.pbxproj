@@ -15,6 +15,7 @@
 		6EE867A21AD6219B008AF641 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6EE867A11AD6219B008AF641 /* Images.xcassets */; };
 		6EE867A51AD6219B008AF641 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6EE867A31AD6219B008AF641 /* LaunchScreen.xib */; };
 		6EE867BD1AD62838008AF641 /* NOAPIController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6EE867BC1AD62838008AF641 /* NOAPIController.m */; };
+		BD9A1FCD1B304EC900385ED9 /* NOAPITask.m in Sources */ = {isa = PBXBuildFile; fileRef = BD9A1FCC1B304EC900385ED9 /* NOAPITask.m */; };
 		E2604AB40AA0C8DC07435DCB /* libPods-NOAPIControllerExample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B1DF83A455AF5B54D89A534 /* libPods-NOAPIControllerExample.a */; };
 /* End PBXBuildFile section */
 
@@ -36,6 +37,9 @@
 		6EE867A41AD6219B008AF641 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		6EE867BB1AD62838008AF641 /* NOAPIController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NOAPIController.h; sourceTree = "<group>"; };
 		6EE867BC1AD62838008AF641 /* NOAPIController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NOAPIController.m; sourceTree = "<group>"; };
+		BD9A1FCB1B304EC900385ED9 /* NOAPITask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NOAPITask.h; sourceTree = "<group>"; };
+		BD9A1FCC1B304EC900385ED9 /* NOAPITask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NOAPITask.m; sourceTree = "<group>"; };
+		BD9A1FCE1B304F0D00385ED9 /* NOAPITaskProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NOAPITaskProtocol.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,6 +104,9 @@
 				6EE867BC1AD62838008AF641 /* NOAPIController.m */,
 				6E63D5821ADB9BAB00F8F7A9 /* NOAPIMapper.h */,
 				6E63D5831ADB9BAB00F8F7A9 /* NOAPIMapper.m */,
+				BD9A1FCB1B304EC900385ED9 /* NOAPITask.h */,
+				BD9A1FCC1B304EC900385ED9 /* NOAPITask.m */,
+				BD9A1FCE1B304F0D00385ED9 /* NOAPITaskProtocol.h */,
 			);
 			name = NOAPIController;
 			path = ../NOAPIController;
@@ -228,6 +235,7 @@
 			files = (
 				6EE867BD1AD62838008AF641 /* NOAPIController.m in Sources */,
 				6E63D5841ADB9BAB00F8F7A9 /* NOAPIMapper.m in Sources */,
+				BD9A1FCD1B304EC900385ED9 /* NOAPITask.m in Sources */,
 				6EE8679D1AD6219B008AF641 /* ViewController.m in Sources */,
 				6EE8679A1AD6219B008AF641 /* AppDelegate.m in Sources */,
 				6EE867971AD6219B008AF641 /* main.m in Sources */,

@@ -26,8 +26,8 @@
 
 #import "NOAPIController.h"
 #import "NOAPIMapper.h"
+#import "NOAPITask.h"
 #import <AFNetworking/AFNetworking.h>
-
 
 @interface AbstractAPIController ()
 @property (nonatomic) NOAPIMapper *mapper;
@@ -55,19 +55,26 @@
     return self;
 }
 
-- (void)getObjectOfType:(Class)objectType fromURL:(NSString *)objectURL
+- (id<NOAPITask>)getObjectOfType:(Class)objectType fromURL:(NSString *)objectURL
     success:(void (^)(id, id))success
     failure:(void (^)(NSError *error, id response))failure
 {
-    [self getObjectOfType:objectType fromURL:objectURL requestMethod:HTTPRequestMethodGET
+    return [self getObjectOfType:objectType fromURL:objectURL requestMethod:HTTPRequestMethodGET
         success:success failure:failure];
 }
 
-- (void)getObjectOfType:(Class)objectType fromURL:(NSString *)objectURL
+- (id<NOAPITask>)getObjectOfType:(Class)objectType fromURL:(NSString *)objectURL
     method:(NSString *)httpMethod httpBody:(NSData *)bodyData success:(void (^)(id, id))success
     failure:(void (^)(NSError *error, id response))failure
 {
+    NOAPITask *apiTask = [[NOAPITask alloc] init];
+    apiTask.successBlock = success;
+    apiTask.failureBlock = failure;
+
     dispatch_async(self.sendingQueue, ^{
+        if (apiTask.cancelled) {
+            return;
+        }
         NSString *urlString = [[NSURL URLWithString:objectURL relativeToURL:self.requestManager.baseURL]
             absoluteString];
 
@@ -82,41 +89,45 @@
         AFHTTPRequestOperation *operation = [self.requestManager HTTPRequestOperationWithRequest:request
             success:^(AFHTTPRequestOperation *operation, id rawObject) {
                 dispatch_async(self.parsingQueue, ^{
-                    id object = [self.mapper objectOfType:objectType fromDictionary:rawObject];
-                    if (success) {
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            success(rawObject, object);
-                        });
+                    if (apiTask.cancelled) {
+                        return;
                     }
+                    id object = [self.mapper objectOfType:objectType fromDictionary:rawObject];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if (!apiTask.cancelled && apiTask.successBlock) {
+                            apiTask.successBlock(rawObject, object);
+                        }
+                    });
                 });
             }
             failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                if (failure) {
-                    failure(error, operation.responseObject);
+                if (!apiTask.cancelled && apiTask.failureBlock) {
+                    apiTask.failureBlock(error, operation.responseObject);
                 }
             }];
         [self.requestManager.operationQueue addOperation:operation];
     });
+    return apiTask;
 }
 
-- (void)getObjectOfType:(Class)objectType fromURL:(NSString *)objectURL POSTData:(NSData *)postData
-    success:(void (^)(id, id))success
+- (id<NOAPITask>)getObjectOfType:(Class)objectType fromURL:(NSString *)objectURL
+    POSTData:(NSData *)postData success:(void (^)(id, id))success
     failure:(void (^)(NSError *error, id response))failure
 {
-    [self getObjectOfType:objectType fromURL:objectURL method:@"POST" httpBody:postData
+    return [self getObjectOfType:objectType fromURL:objectURL method:@"POST" httpBody:postData
         success:success failure:failure];
 }
 
-- (void)getObjectOfType:(Class)objectType fromURL:(NSString *)objectURL PUTData:(NSData *)putData
-    success:(void (^)(id, id))success
+- (id<NOAPITask>)getObjectOfType:(Class)objectType fromURL:(NSString *)objectURL
+    PUTData:(NSData *)putData success:(void (^)(id, id))success
     failure:(void (^)(NSError *error, id response))failure
 {
-    [self getObjectOfType:objectType fromURL:objectURL method:@"PUT" httpBody:putData
+    return [self getObjectOfType:objectType fromURL:objectURL method:@"PUT" httpBody:putData
         success:success failure:failure];
 }
 
-- (void)postData:(NSData *)postData toURL:(NSString *)objectURL success:(void (^)(id))success
-    failure:(void (^)(NSError *error, id response))failure
+- (void)postData:(NSData *)postData toURL:(NSString *)objectURL
+    success:(void (^)(id))success failure:(void (^)(NSError *error, id response))failure
 {
     dispatch_async(self.sendingQueue, ^{
         NSString *urlString = [[NSURL URLWithString:objectURL relativeToURL:self.requestManager.baseURL]
@@ -145,49 +156,59 @@
     });
 }
 
-- (void)getObjectOfType:(Class)objectType fromURL:(NSString *)objectURL
+- (id<NOAPITask>)getObjectOfType:(Class)objectType fromURL:(NSString *)objectURL
     requestMethod:(HTTPRequestMethod)method
     success:(void(^)(id rawObject, id resultingObject))success
     failure:(void(^)(NSError *error, id response))failure
 {
+    NOAPITask *apiTask = [[NOAPITask alloc] init];
+    apiTask.successBlock = success;
+    apiTask.failureBlock = failure;
+
     dispatch_async(self.sendingQueue, ^{
+        if (apiTask.cancelled) {
+            return;
+        }
         void (^successBlock)(AFHTTPRequestOperation *operation, NSDictionary *rawObject) =
             ^(AFHTTPRequestOperation *operation, NSDictionary *rawObject) {
                 dispatch_async(self.parsingQueue, ^{
-                    id object = [self.mapper objectOfType:objectType fromDictionary:rawObject];
-                    if (success) {
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            success(rawObject, object);
-                        });
+                    if (apiTask.cancelled) {
+                        return;
                     }
+                    id object = [self.mapper objectOfType:objectType fromDictionary:rawObject];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if (!apiTask.cancelled && apiTask.successBlock) {
+                            apiTask.successBlock(rawObject, object);
+                        }
+                    });
                 });
             };
         void (^failureBlock)(AFHTTPRequestOperation *operation, NSError *error) =
             ^(AFHTTPRequestOperation *operation, NSError *error) {
-                if (failure) {
-                    failure(error, operation.responseObject);
+                if (!apiTask.cancelled && apiTask.failureBlock) {
+                    apiTask.failureBlock(error, operation.responseObject);
                 }
             };
 
         switch (method) {
             case HTTPRequestMethodGET: {
-                [self.requestManager GET:objectURL parameters:nil success:successBlock
-                    failure:failureBlock];
+                apiTask.operation = [self.requestManager GET:objectURL parameters:nil
+                    success:successBlock failure:failureBlock];
                 break;
             }
             case HTTPRequestMethodPOST: {
-                [self.requestManager POST:objectURL parameters:nil success:successBlock
-                    failure:failureBlock];
+                apiTask.operation = [self.requestManager POST:objectURL parameters:nil
+                    success:successBlock failure:failureBlock];
                 break;
             }
             case HTTPRequestMethodDELETE: {
-                [self.requestManager DELETE:objectURL parameters:nil success:successBlock
-                    failure:failureBlock];
+                apiTask.operation = [self.requestManager DELETE:objectURL parameters:nil
+                    success:successBlock failure:failureBlock];
                 break;
             }
             case HTTPRequestMethodPUT: {
-                [self.requestManager PUT:objectURL parameters:nil success:successBlock
-                    failure:failureBlock];
+                apiTask.operation = [self.requestManager PUT:objectURL parameters:nil
+                    success:successBlock failure:failureBlock];
                 break;
             }
             default: {
@@ -195,16 +216,27 @@
             }
         }
     });
+    return apiTask;
 }
 
-- (void)getObjectsOfType:(Class)objectType fromURL:(NSString *)objectURL
+- (id<NOAPITask>)getObjectsOfType:(Class)objectType fromURL:(NSString *)objectURL
     success:(void(^)(NSArray *, NSArray *))success
     failure:(void(^)(NSError *error, id response))failure
 {
+    NOAPITask *apiTask = [[NOAPITask alloc] init];
+    apiTask.successBlock = success;
+    apiTask.failureBlock = failure;
+
     dispatch_async(self.sendingQueue, ^{
+        if (apiTask.cancelled) {
+            return;
+        }
         [self.requestManager GET:objectURL parameters:nil
             success:^(AFHTTPRequestOperation *operation, NSArray *rawObjects) {
                 dispatch_async(self.parsingQueue, ^{
+                    if (apiTask.cancelled) {
+                        return;
+                    }
                     NSMutableArray *objects = [[NSMutableArray alloc] initWithCapacity:rawObjects.count];
                     for (NSDictionary *rawObject in rawObjects) {
                         id object = [self.mapper objectOfType:objectType fromDictionary:rawObject];
@@ -212,35 +244,43 @@
                             [objects addObject:object];
                         }
                         else {
-                            if (failure) {
-                                dispatch_async(dispatch_get_main_queue(), ^{
-                                    failure(nil, nil);
-                                });
-                            }
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                if (!apiTask.cancelled && apiTask.failureBlock) {
+                                    apiTask.failureBlock(nil, nil);
+                                }
+                            });
                         }
                     }
-                    if (success) {
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            success(rawObjects, objects);
-                        });
-                    }
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if (!apiTask.cancelled && apiTask.successBlock) {
+                            apiTask.successBlock(rawObjects, objects);
+                        }
+                    });
                 });
             }
             failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                if (failure) {
-                    failure(error, operation.responseObject);
+                if (!apiTask.cancelled && apiTask.failureBlock) {
+                    apiTask.failureBlock(error, operation.responseObject);
                 }
             }];
     });
+    return apiTask;
 }
 
 #pragma mark - Private methods
 
-- (void)getObjectOfType:(Class)objectType fromURL:(NSString *)objectURL postBody:(NSData *)bodyData
-    boundary:(NSString *)boundary success:(void (^)(id, id))success
+- (id<NOAPITask>)getObjectOfType:(Class)objectType fromURL:(NSString *)objectURL
+    postBody:(NSData *)bodyData boundary:(NSString *)boundary success:(void (^)(id, id))success
     failure:(void (^)(NSError *error, id response))failure
 {
+    NOAPITask *apiTask = [[NOAPITask alloc] init];
+    apiTask.successBlock = success;
+    apiTask.failureBlock = failure;
+
     dispatch_async(self.sendingQueue, ^{
+        if (apiTask.cancelled) {
+            return;
+        }
         NSString *urlString = [[NSURL URLWithString:objectURL relativeToURL:self.requestManager.baseURL]
             absoluteString];
 
@@ -254,23 +294,27 @@
             forHTTPHeaderField:@"Content-Type"];
 
         AFHTTPRequestOperation *operation = [self.requestManager HTTPRequestOperationWithRequest:request
-             success:^(AFHTTPRequestOperation *operation, id rawObject) {
-                 dispatch_async(self.parsingQueue, ^{
-                     id object = [self.mapper objectOfType:objectType fromDictionary:rawObject];
-                     if (success) {
-                         dispatch_async(dispatch_get_main_queue(), ^{
-                             success(rawObject, object);
-                         });
-                     }
+            success:^(AFHTTPRequestOperation *operation, id rawObject) {
+                dispatch_async(self.parsingQueue, ^{
+                    if (apiTask.cancelled) {
+                        return;
+                    }
+                    id object = [self.mapper objectOfType:objectType fromDictionary:rawObject];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if (!apiTask.cancelled && apiTask.successBlock) {
+                            apiTask.successBlock(rawObject, object);
+                        }
+                    });
                  });
-             }
-             failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                 if (failure) {
-                     failure(error, operation.responseObject);
-                 }
-             }];
+            }
+            failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+                if (!apiTask.cancelled && apiTask.failureBlock) {
+                    apiTask.failureBlock(error, operation.responseObject);
+                }
+            }];
         [self.requestManager.operationQueue addOperation:operation];
     });
+    return apiTask;
 }
 
 @end
