@@ -93,7 +93,7 @@
 
             // Parse array of sub-objects.
             if (arrayItemClassName) {
-                NSArray *innerArray = rawObject[fieldKey];
+                NSArray *innerArray = [rawObject valueForKeyPath:fieldKey];
                 if ([innerArray isKindOfClass:[NSArray class]]) {
                     NSMutableArray *arrayOfItems = [NSMutableArray array];
                     for (NSDictionary *arrayItemDescription in innerArray) {
