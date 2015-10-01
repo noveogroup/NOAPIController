@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "NOAPIController"
-  s.version      = "0.0.4"
+  s.version      = "0.0.5"
   s.summary      = "API controller with JSON to Objective-C objects mapping."
   s.homepage     = "https://github.com/noveogroup/NOAPIController"
   s.license      = "MIT"
