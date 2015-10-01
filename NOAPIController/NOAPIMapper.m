@@ -153,6 +153,16 @@
             
             // Parse object according to its class.
             else if (classOfObject) {
+                if (typeOfField) {
+                    id innerObject = [rawObject valueForKeyPath:fieldKey];
+                    if (![innerObject isKindOfClass:NSClassFromString(typeOfField)]) {
+                        NSLog(@"Warning: API response for <%@> contains unexpected value: <%@>%@"
+                            "for key \"%@\"while an instance of <%@> is expected.", objectType,
+                            [innerObject class], innerObject, fieldKey, typeOfField);
+                        return object;
+                    }
+                }
+                
                 id innerObject = [self objectOfType:NSClassFromString(classOfObject)
                     fromDictionary:[rawObject valueForKeyPath:fieldKey]];
                 if (object) {
