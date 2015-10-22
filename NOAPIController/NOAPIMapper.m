@@ -156,7 +156,7 @@
                 if (typeOfField) {
                     id innerObject = [rawObject valueForKeyPath:fieldKey];
                     if (![innerObject isKindOfClass:NSClassFromString(typeOfField)]) {
-                        if (![innerObject isKindOfClass:[NSNull class]]) {
+                        if (innerObject && ![innerObject isKindOfClass:[NSNull class]]) {
                             NSLog(@"Warning: API response for <%@> contains unexpected value: <%@>%@"
                                 "for key \"%@\"while an instance of <%@> is expected.", objectType,
                                 [innerObject class], innerObject, fieldKey, typeOfField);
