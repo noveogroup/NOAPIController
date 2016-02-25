@@ -8,9 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		6E63D5841ADB9BAB00F8F7A9 /* NOAPIMapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E63D5831ADB9BAB00F8F7A9 /* NOAPIMapper.m */; };
+		6E96116C1C7EF65F0019CC11 /* GitHubAPIController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E96116B1C7EF65F0019CC11 /* GitHubAPIController.m */; };
+		6E9611731C7EF98A0019CC11 /* RepositoriesVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E9611721C7EF98A0019CC11 /* RepositoriesVC.m */; };
+		6E9611771C7EFC9C0019CC11 /* Configuration.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E9611761C7EFC9C0019CC11 /* Configuration.m */; };
+		6E96117A1C7EFE0A0019CC11 /* Repository.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E9611791C7EFE0A0019CC11 /* Repository.m */; };
+		6E96117D1C7F18F20019CC11 /* GitHubAPIMapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E96117C1C7F18F20019CC11 /* GitHubAPIMapper.m */; };
 		6EE867971AD6219B008AF641 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6EE867961AD6219B008AF641 /* main.m */; };
 		6EE8679A1AD6219B008AF641 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6EE867991AD6219B008AF641 /* AppDelegate.m */; };
-		6EE8679D1AD6219B008AF641 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6EE8679C1AD6219B008AF641 /* ViewController.m */; };
 		6EE867A01AD6219B008AF641 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6EE8679E1AD6219B008AF641 /* Main.storyboard */; };
 		6EE867A21AD6219B008AF641 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6EE867A11AD6219B008AF641 /* Images.xcassets */; };
 		6EE867A51AD6219B008AF641 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6EE867A31AD6219B008AF641 /* LaunchScreen.xib */; };
@@ -25,13 +29,21 @@
 		6CF8A07B8FD2985C2216E7C7 /* Pods-NOAPIControllerExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NOAPIControllerExample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-NOAPIControllerExample/Pods-NOAPIControllerExample.debug.xcconfig"; sourceTree = "<group>"; };
 		6E63D5821ADB9BAB00F8F7A9 /* NOAPIMapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NOAPIMapper.h; sourceTree = "<group>"; };
 		6E63D5831ADB9BAB00F8F7A9 /* NOAPIMapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NOAPIMapper.m; sourceTree = "<group>"; };
+		6E96116A1C7EF65F0019CC11 /* GitHubAPIController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GitHubAPIController.h; sourceTree = "<group>"; };
+		6E96116B1C7EF65F0019CC11 /* GitHubAPIController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GitHubAPIController.m; sourceTree = "<group>"; };
+		6E9611711C7EF98A0019CC11 /* RepositoriesVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RepositoriesVC.h; sourceTree = "<group>"; };
+		6E9611721C7EF98A0019CC11 /* RepositoriesVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RepositoriesVC.m; sourceTree = "<group>"; };
+		6E9611751C7EFC9C0019CC11 /* Configuration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Configuration.h; sourceTree = "<group>"; };
+		6E9611761C7EFC9C0019CC11 /* Configuration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Configuration.m; sourceTree = "<group>"; };
+		6E9611781C7EFE0A0019CC11 /* Repository.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Repository.h; sourceTree = "<group>"; };
+		6E9611791C7EFE0A0019CC11 /* Repository.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Repository.m; sourceTree = "<group>"; };
+		6E96117B1C7F18F20019CC11 /* GitHubAPIMapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GitHubAPIMapper.h; sourceTree = "<group>"; };
+		6E96117C1C7F18F20019CC11 /* GitHubAPIMapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GitHubAPIMapper.m; sourceTree = "<group>"; };
 		6EE867911AD6219B008AF641 /* NOAPIControllerExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NOAPIControllerExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6EE867951AD6219B008AF641 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6EE867961AD6219B008AF641 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		6EE867981AD6219B008AF641 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		6EE867991AD6219B008AF641 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		6EE8679B1AD6219B008AF641 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		6EE8679C1AD6219B008AF641 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		6EE8679F1AD6219B008AF641 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		6EE867A11AD6219B008AF641 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		6EE867A41AD6219B008AF641 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -54,6 +66,44 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		6E9611681C7EF5EB0019CC11 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				6E96116A1C7EF65F0019CC11 /* GitHubAPIController.h */,
+				6E96116B1C7EF65F0019CC11 /* GitHubAPIController.m */,
+				6E96117B1C7F18F20019CC11 /* GitHubAPIMapper.h */,
+				6E96117C1C7F18F20019CC11 /* GitHubAPIMapper.m */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		6E9611691C7EF5EB0019CC11 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				6E9611781C7EFE0A0019CC11 /* Repository.h */,
+				6E9611791C7EFE0A0019CC11 /* Repository.m */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		6E9611701C7EF98A0019CC11 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				6E9611711C7EF98A0019CC11 /* RepositoriesVC.h */,
+				6E9611721C7EF98A0019CC11 /* RepositoriesVC.m */,
+			);
+			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		6E9611741C7EFC900019CC11 /* Configuration */ = {
+			isa = PBXGroup;
+			children = (
+				6E9611751C7EFC9C0019CC11 /* Configuration.h */,
+				6E9611761C7EFC9C0019CC11 /* Configuration.m */,
+			);
+			path = Configuration;
+			sourceTree = "<group>";
+		};
 		6EE867881AD6219B008AF641 = {
 			isa = PBXGroup;
 			children = (
@@ -76,10 +126,12 @@
 		6EE867931AD6219B008AF641 /* NOAPIControllerExample */ = {
 			isa = PBXGroup;
 			children = (
+				6E9611691C7EF5EB0019CC11 /* Models */,
+				6E9611681C7EF5EB0019CC11 /* Controllers */,
+				6E9611701C7EF98A0019CC11 /* ViewControllers */,
+				6E9611741C7EFC900019CC11 /* Configuration */,
 				6EE867981AD6219B008AF641 /* AppDelegate.h */,
 				6EE867991AD6219B008AF641 /* AppDelegate.m */,
-				6EE8679B1AD6219B008AF641 /* ViewController.h */,
-				6EE8679C1AD6219B008AF641 /* ViewController.m */,
 				6EE8679E1AD6219B008AF641 /* Main.storyboard */,
 				6EE867A11AD6219B008AF641 /* Images.xcassets */,
 				6EE867A31AD6219B008AF641 /* LaunchScreen.xib */,
@@ -233,11 +285,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6E96117D1C7F18F20019CC11 /* GitHubAPIMapper.m in Sources */,
 				6EE867BD1AD62838008AF641 /* NOAPIController.m in Sources */,
+				6E9611731C7EF98A0019CC11 /* RepositoriesVC.m in Sources */,
+				6E9611771C7EFC9C0019CC11 /* Configuration.m in Sources */,
 				6E63D5841ADB9BAB00F8F7A9 /* NOAPIMapper.m in Sources */,
 				BD9A1FCD1B304EC900385ED9 /* NOAPITask.m in Sources */,
-				6EE8679D1AD6219B008AF641 /* ViewController.m in Sources */,
 				6EE8679A1AD6219B008AF641 /* AppDelegate.m in Sources */,
+				6E96116C1C7EF65F0019CC11 /* GitHubAPIController.m in Sources */,
+				6E96117A1C7EFE0A0019CC11 /* Repository.m in Sources */,
 				6EE867971AD6219B008AF641 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -347,6 +403,12 @@
 			baseConfigurationReference = 6CF8A07B8FD2985C2216E7C7 /* Pods-NOAPIControllerExample.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_ROOT}/Headers/Public\"",
+					"\"${PODS_ROOT}/Headers/Public/AFNetworking\"",
+					"\"../NOAPIController\"",
+				);
 				INFOPLIST_FILE = NOAPIControllerExample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -358,6 +420,12 @@
 			baseConfigurationReference = 10259FABFACEE18A797142C0 /* Pods-NOAPIControllerExample.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_ROOT}/Headers/Public\"",
+					"\"${PODS_ROOT}/Headers/Public/AFNetworking\"",
+					"\"../NOAPIController\"",
+				);
 				INFOPLIST_FILE = NOAPIControllerExample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
